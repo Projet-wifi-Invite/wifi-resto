@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Bienvenue au {{ restaurant.name }}</h1>
+<h1>Bienvenue chez {{ restaurant.name }}</h1>
 <div class="card">
   <p>Wi-Fi gratuit offert par le restaurant. Acceptez les conditions pour vous connecter.</p>
   <form method="post" action="{{ url_for('portal.accept', slug=restaurant.slug) }}">

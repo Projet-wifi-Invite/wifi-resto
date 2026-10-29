@@ -2,9 +2,12 @@
 {% block content %}
 <h1>Vous êtes connecté</h1>
 <div class="card">
-  <p>Bonne visite au {{ restaurant.name }} !</p>
+  <p>Bonne dégustation chez {{ restaurant.name }} !</p>
   {% if restaurant.google_reviews_url %}
-  <p><a href="{{ restaurant.google_reviews_url }}">Laisser un avis sur Google</a></p>
+  <a class="btn" href="{{ restaurant.google_reviews_url }}">Laisser un avis sur Google</a>
+  {% endif %}
+  {% if restaurant.instagram_url %}
+  <a class="btn btn-secondary" href="{{ restaurant.instagram_url }}">Suivre sur Instagram</a>
   {% endif %}
 </div>
 {% endblock %}

@@ -44,3 +44,14 @@ def test_email_enregistre_seulement_si_case_cochee(client):
     assert NewsletterConsent.query.count() == 0
     client.post("/portal/test/accept", data={"terms": "on", "newsletter": "on", "email": "a@b.fr"})
     assert NewsletterConsent.query.count() == 1
+
+def test_page_merci_affiche_les_liens_du_restaurant(client):
+    from app.models import Restaurant, db
+    with client.application.app_context():
+        resto = db.session.execute(db.select(Restaurant).filter_by(slug="test")).scalar_one()
+        resto.google_reviews_url = "https://maps.google.com/?cid=1"
+        resto.instagram_url = "https://www.instagram.com/test/"
+        db.session.commit()
+    html = client.get("/portal/test/merci").get_data(as_text=True)
+    assert "Laisser un avis sur Google" in html
+    assert "Suivre sur Instagram" in html
