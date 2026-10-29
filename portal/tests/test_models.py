@@ -14,7 +14,7 @@ def test_les_tables_se_creent():
     with app.app_context():
         db.create_all()
         tables = set(db.metadata.tables)
-    assert tables == {"restaurants", "connection_sessions", "legal_logs", "newsletter_consents"}
+    assert tables == {"restaurants", "connection_sessions", "legal_logs", "newsletter_consents", "pending_auths"}
 
 
 def test_journal_legal_purge_a_un_an():

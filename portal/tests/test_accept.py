@@ -2,7 +2,7 @@
 import pytest
 
 from app import create_app
-from app.models import ConnectionSession, NewsletterConsent, Restaurant, db
+from app.models import ConnectionSession, LegalLog, NewsletterConsent, Restaurant, db
 
 
 @pytest.fixture
@@ -33,6 +33,12 @@ def test_accepter_cree_une_session(client):
     assert NewsletterConsent.query.count() == 0
 
 
+def test_previsualisation_n_ecrit_pas_de_journal_legal(client):
+    client.post("/portal/test/accept", data={"terms": "on"})
+    assert LegalLog.query.count() == 0
+    assert ConnectionSession.query.one().client_hid == "preview"
+
+
 def test_refuser_les_conditions_est_bloque(client):
     reponse = client.post("/portal/test/accept", data={"client_hid": "abc"})
     assert reponse.status_code == 400
@@ -44,6 +50,7 @@ def test_email_enregistre_seulement_si_case_cochee(client):
     assert NewsletterConsent.query.count() == 0
     client.post("/portal/test/accept", data={"terms": "on", "newsletter": "on", "email": "a@b.fr"})
     assert NewsletterConsent.query.count() == 1
+
 
 def test_page_merci_affiche_les_liens_du_restaurant(client):
     from app.models import Restaurant, db
