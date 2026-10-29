@@ -218,3 +218,10 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Secrets : jamais dans Git
+.env
+*.key
+*.pem
+wg*.conf
+secrets/
