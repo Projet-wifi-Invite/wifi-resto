@@ -1,4 +1,4 @@
-﻿"""Tests des routes de base."""
+"""Tests des routes de base."""
 from app import create_app
 
 
@@ -13,4 +13,4 @@ def test_index_affiche_le_restaurant():
     client = create_app().test_client()
     reponse = client.get("/")
     assert reponse.status_code == 200
-    assert "Restaurant de test" in reponse.get_data(as_text=True)
+    assert "wifi-resto" in reponse.get_data(as_text=True)

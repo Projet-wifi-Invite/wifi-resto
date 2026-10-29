@@ -1,4 +1,4 @@
-﻿"""Tests du modèle de données, sur SQLite en mémoire."""
+"""Tests du modèle de données, sur SQLite en mémoire."""
 from datetime import timedelta
 
 from app import create_app

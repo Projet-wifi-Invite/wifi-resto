@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Vous êtes connecté</h1>
+<div class="card">
+  <p>Bonne visite au {{ restaurant.name }} !</p>
+  {% if restaurant.google_reviews_url %}
+  <p><a href="{{ restaurant.google_reviews_url }}">Laisser un avis sur Google</a></p>
+  {% endif %}
+</div>
+{% endblock %}

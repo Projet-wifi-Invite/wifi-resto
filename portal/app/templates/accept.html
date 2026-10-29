@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Bienvenue au {{ restaurant.name }}</h1>
+<div class="card">
+  <p>Wi-Fi gratuit offert par le restaurant. Acceptez les conditions pour vous connecter.</p>
+  <form method="post" action="{{ url_for('portal.accept', slug=restaurant.slug) }}">
+    <input type="hidden" name="client_hid" value="{{ client_hid }}">
+    <label><input type="checkbox" name="terms" required> J'accepte les conditions d'utilisation</label>
+    <label><input type="checkbox" name="newsletter"> Je souhaite recevoir les actualités du restaurant (facultatif)</label>
+    <label>E-mail (uniquement si vous cochez la case ci-dessus)
+      <input type="email" name="email" placeholder="vous@exemple.fr">
+    </label>
+    <button type="submit">Se connecter</button>
+  </form>
+  <details>
+    <summary>Vos données et vos droits</summary>
+    <p>Conformément à la loi, ce service conserve pendant <strong>1 an</strong> les données techniques de votre connexion : adresse IP attribuée, identifiant de votre appareil (adresse MAC), date, heure et durée. Ces données ne servent qu'à répondre aux demandes des autorités judiciaires. Le contenu de vos échanges et les sites que vous consultez ne sont <strong>jamais</strong> enregistrés.</p>
+    <p>Votre e-mail n'est conservé que si vous cochez la case, et uniquement pour les actualités du restaurant. Vous pouvez demander l'accès, la rectification ou la suppression de vos données auprès du restaurant.</p>
+  </details>
+</div>
+{% endblock %}

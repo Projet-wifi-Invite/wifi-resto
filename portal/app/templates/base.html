@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Wi-Fi {{ restaurant.name }}</title>
+  <style>
+    :root { --primary: {{ restaurant.primary_color }}; }
+    body { font-family: system-ui, sans-serif; margin: 0; background: #f6f6f6; color: #222; }
+    main { max-width: 420px; margin: 0 auto; padding: 24px 16px; }
+    h1 { color: var(--primary); font-size: 1.5rem; }
+    .card { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+    label { display: block; margin: 12px 0; }
+    input[type=email] { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
+    button { width: 100%; padding: 14px; border: 0; border-radius: 8px; background: var(--primary); color: #fff; font-size: 1rem; }
+    details { margin-top: 16px; font-size: .85rem; color: #555; }
+    a { color: var(--primary); }
+  </style>
+</head>
+<body>
+  <main>{% block content %}{% endblock %}</main>
+</body>
+</html>

@@ -1,4 +1,4 @@
-﻿"""Modèle de données du portail.
+"""Modèle de données du portail.
 
 Règle CNIL : les journaux légaux ne contiennent que des données techniques
 (IP, MAC, dates). Jamais de contenu, de site visité ni de requête DNS.
