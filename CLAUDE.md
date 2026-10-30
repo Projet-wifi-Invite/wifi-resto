@@ -74,7 +74,7 @@ portal/    application Flask (app/, tests/, tools/), docker-compose de dev
 - Branche par tâche, préfixée par le domaine : `gateway/`, `server/`, `portal/`, `docs/`.
 - Commit : `domaine: description courte` en français.
 - Jamais de push direct sur `main` : PR + 1 approbation par un membre dont ce n'est pas le domaine.
-- Claude Code **ne commite pas et ne pousse pas** : il laisse le diff, l'auteur relit et commite lui-même.
+- Claude Code **ne commite pas et ne pousse pas**, sauf demande explicite de l'auteur : par défaut, il laisse le diff, l'auteur relit et commite lui-même.
 - Toute décision structurante va dans `docs/decisions.md` (date, décision, pourquoi), le jour même.
 
 ## Sécurité et secrets
