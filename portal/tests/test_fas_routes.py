@@ -8,6 +8,7 @@ from app.models import ConnectionSession, LegalLog, PendingAuth, Restaurant, db
 from tests.test_fas import HID, make_fas
 
 KEY = "cle-de-test"
+GW = hashlib.sha256(b"Coeur%20de%20Beurre").hexdigest()
 
 
 @pytest.fixture
@@ -15,7 +16,7 @@ def client():
     app = create_app({"SQLALCHEMY_DATABASE_URI": "sqlite://", "TESTING": True, "FAS_KEY": KEY})
     with app.app_context():
         db.create_all()
-        db.session.add(Restaurant(name="Cœur de Beurre", slug="coeur-de-beurre"))
+        db.session.add(Restaurant(name="Cœur de Beurre", slug="coeur-de-beurre", gateway_hash=GW))
         db.session.commit()
         yield app.test_client()
 
@@ -56,12 +57,22 @@ def test_acceptation_ecrit_journal_session_et_file(client):
 
     pending = PendingAuth.query.one()
     assert pending.rhid == hashlib.sha256((HID + KEY).encode()).hexdigest()
-    assert pending.gateway_hash == hashlib.sha256(b"Coeur%20de%20Beurre").hexdigest()
+    assert pending.gateway_hash == GW
     assert pending.line.startswith(pending.rhid + " 240 2000 8000 0 0 ")
 
 
 def test_acceptation_sans_cocher_est_refusee(client):
     assert client.post("/fas/accept", data={"fas": make_fas()}).status_code == 400
+    assert PendingAuth.query.count() == 0
+    assert LegalLog.query.count() == 0
+
+
+def test_restaurant_sans_passerelle_refuse_l_acceptation_en_503(client):
+    """Sans gateway_hash, la ligne irait dans une file que personne ne lirait : on refuse explicitement."""
+    db.session.add(Restaurant(name="Sans passerelle", slug="sans-passerelle"))
+    db.session.commit()
+    response = client.post("/fas/accept", data={"fas": make_fas(resto="sans-passerelle"), "terms": "on"})
+    assert response.status_code == 503
     assert PendingAuth.query.count() == 0
     assert LegalLog.query.count() == 0
 
