@@ -23,6 +23,7 @@ class Restaurant(db.Model):
     slug = db.Column(db.String(60), unique=True, nullable=False)
     primary_color = db.Column(db.String(7), default="#c0392b")
     google_reviews_url = db.Column(db.String(300))
+    instagram_url = db.Column(db.String(300))
     gateway_id = db.Column(db.String(64), unique=True)  # identifiant openNDS de la passerelle
     created_at = db.Column(db.DateTime(timezone=True), default=now_utc)
 
