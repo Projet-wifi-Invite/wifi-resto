@@ -11,11 +11,17 @@ from urllib.parse import quote
 
 # Séparateur des paires clé=valeur dans la chaîne décodée (QUERYSEPARATOR dans openNDS)
 _SEPARATOR = ", "
-_HID_RE = re.compile(r"^[0-9a-f]{64}$")
+# hid, rhid et gatewayhash ont tous le même format : une empreinte sha256 en hexadécimal minuscule.
+_SHA256_HEX_RE = re.compile(r"^[0-9a-f]{64}$")
 
 
 class FasError(ValueError):
     """Paramètre fas absent, mal encodé ou incohérent."""
+
+
+def is_sha256_hex(value: str) -> bool:
+    """Vrai si `value` est une empreinte sha256 hexadécimale minuscule de 64 caractères."""
+    return bool(_SHA256_HEX_RE.match(value))
 
 
 def parse_fas(b64: str) -> dict[str, str]:
@@ -40,7 +46,7 @@ def parse_fas(b64: str) -> dict[str, str]:
         params[key.strip()] = value.strip()
 
     hid = params.get("hid", "")
-    if not _HID_RE.match(hid):
+    if not is_sha256_hex(hid):
         raise FasError("hid absent ou invalide")
     return params
 
@@ -87,3 +93,21 @@ def encode_auth_list(lines: list[str]) -> str:
     Équivalent du rawurlencode() PHP : tout est encodé sauf lettres, chiffres et -_.~
     """
     return "*" + "".join(" " + quote(line, safe="") for line in lines)
+
+
+def decode_payload(payload_b64: str) -> str:
+    """Décode le payload base64 envoyé par authmon. Renvoie "none" s'il est absent ou illisible."""
+    if not payload_b64:
+        return "none"
+    try:
+        return base64.b64decode(payload_b64, validate=True).decode("utf-8")
+    except (binascii.Error, UnicodeDecodeError):
+        return "none"
+
+
+def parse_acklist(payload: str) -> set[str]:
+    """Extrait les rhid acquittés par authmon d'un payload de la forme "* rhid1 rhid2".
+
+    Seules les valeurs sha256 hexadécimales bien formées sont gardées, le reste est ignoré.
+    """
+    return {token for token in payload.split() if is_sha256_hex(token)}
