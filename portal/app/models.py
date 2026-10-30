@@ -24,7 +24,7 @@ class Restaurant(db.Model):
     primary_color = db.Column(db.String(7), default="#c0392b")
     google_reviews_url = db.Column(db.String(300))
     instagram_url = db.Column(db.String(300))
-    gateway_id = db.Column(db.String(64), unique=True)  # identifiant openNDS de la passerelle
+    gateway_hash = db.Column(db.String(64), unique=True)  # sha256 du gatewayname URL-encodé (voir docs/integration-opennds.md § 5)
     created_at = db.Column(db.DateTime(timezone=True), default=now_utc)
 
     sessions = db.relationship("ConnectionSession", back_populates="restaurant")
@@ -65,3 +65,14 @@ class NewsletterConsent(db.Model):
     restaurant_id = db.Column(db.Integer, db.ForeignKey("restaurants.id"), nullable=False)
     email = db.Column(db.String(254), nullable=False)
     consented_at = db.Column(db.DateTime(timezone=True), default=now_utc, nullable=False)
+
+
+class PendingAuth(db.Model):
+    """Autorisation en attente d'être récupérée par le démon authmon de la passerelle."""
+    __tablename__ = "pending_auths"
+
+    id = db.Column(db.Integer, primary_key=True)
+    gateway_hash = db.Column(db.String(64), nullable=False, index=True)
+    rhid = db.Column(db.String(64), nullable=False, unique=True)
+    line = db.Column(db.String(400), nullable=False)
+    created_at = db.Column(db.DateTime(timezone=True), default=now_utc, nullable=False)

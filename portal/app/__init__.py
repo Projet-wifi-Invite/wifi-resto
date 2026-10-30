@@ -4,6 +4,7 @@ import os
 from dotenv import load_dotenv
 from flask import Flask
 
+from app.fas import gateway_hash
 from app.models import db
 
 
@@ -13,6 +14,7 @@ def create_app(test_config=None):
     app = Flask(__name__)
     app.config["SECRET_KEY"] = os.environ.get("FLASK_SECRET_KEY", "dev-only")
     app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL", "sqlite://")
+    app.config["FAS_KEY"] = os.environ.get("FAS_KEY", "dev-fas-key")
 
     if test_config:
         app.config.update(test_config)
@@ -44,6 +46,7 @@ def create_app(test_config=None):
                 primary_color="#3b6f9c",
                 google_reviews_url="https://maps.google.com/?cid=17216702826779400729",
                 instagram_url="https://www.instagram.com/coeurdebeurre_rennes/",
+                gateway_hash=gateway_hash("Coeur%20de%20Beurre"),
             )
         )
         db.session.commit()
