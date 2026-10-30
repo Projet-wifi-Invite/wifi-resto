@@ -44,7 +44,7 @@ portal/    application Flask (app/, tests/, tools/), docker-compose de dev
 ## Bonnes pratiques (héritées de NeoDesk, non négociables)
 
 ### Code
-- **Tout le code en anglais** : identifiants, commentaires, docstrings, messages de log, noms de tests. La documentation dans `docs/`, les messages de commit et les PR restent en français.
+- **Identifiants en anglais** (variables, fonctions, classes, tables). **Commentaires, docstrings, messages et noms de tests en français.** La documentation dans `docs/`, les messages de commit et les PR restent en français.
 - Toute entrée externe est validée côté serveur, par regex ou par type : e-mail (longueur ≤ 254 + format), slug (`^[a-z0-9-]{1,60}$`), `hid` (`^[0-9a-f]{64}$`), MAC, IP. Jamais confiance au navigateur ni au routeur.
 - Une fonction = une responsabilité. Le protocole (`app/fas.py`) reste pur : pas de Flask, pas de base, testable seul.
 - Pas de valeur par défaut pour un secret : si `FAS_KEY` ou `DATABASE_URL` manque hors tests, l'application refuse de démarrer.
