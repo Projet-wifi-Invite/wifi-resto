@@ -1,0 +1,30 @@
+# /etc/config/opennds — config CIBLE (FAS niveau 4, portail sur le VPS)
+# Conforme au contrat docs/integration-opennds.md §7. NE PAS remplir les valeurs
+# secrètes/réelles ici : ce dépôt est public (voir CLAUDE.md). Les <PLACEHOLDERS>
+# sont à définir dans un fichier non versionné le jour de l'install, pas ici.
+#
+# Dépendances non disponibles au 30 oct 2026, à obtenir avant de pouvoir utiliser
+# cette config telle quelle :
+#   - faskey (Rudy, 64 hex, `openssl rand -hex 32`, jamais dans Git)
+#   - fasremotefqdn / fasremoteip (une fois le VPS de Rudy monté et son DNS pointé)
+#   - ca-bundle installé sur le routeur (apk add ca-bundle) sinon authmon ne peut pas
+#     valider le certificat Let's Encrypt du VPS
+
+config opennds
+	option enabled '1'
+	option gatewayname '<NOM_DU_RESTAURANT>'
+	option gatewayinterface 'br-guest'
+	option fas_secure_enabled '4'
+	option fasport '443'
+	option fasremotefqdn '<PLACEHOLDER: portail.<notre-domaine>>'
+	option fasremoteip '<PLACEHOLDER: IP publique du VPS>'
+	option faspath '/fas'
+	option faskey '<PLACEHOLDER: fourni par Rudy, jamais committé>'
+	option fas_custom_parameters_list 'resto=<slug-du-restaurant>'
+	option nat_traversal_poll_interval '5'
+	option checkinterval '15'
+	option sessiontimeout '240'
+	list walledgarden_fqdn_list 'portail.<notre-domaine>'
+
+# Après application : `/etc/init.d/opennds restart` puis vérifier dans `logread -f`
+# qu'authmon démarre sans logger `ERROR:`.
