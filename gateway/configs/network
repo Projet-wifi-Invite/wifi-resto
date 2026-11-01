@@ -1,0 +1,30 @@
+# /etc/config/network — testé en labo (VM x86), interfaces à adapter au Flint 2 réel
+#
+# Principe : le pont destiné au Wi-Fi clients (ici 'br-lan', à renommer 'br-guest' en
+# production pour matcher docs/integration-opennds.md) doit être sur l'interface physique
+# du Wi-Fi, PAS sur celle qui va vers la box du resto. Sur le Flint 2, le mapping des ports
+# et radios sera différent de ce labo (où eth1 = LAN de test, eth0 = WAN/NAT de test) —
+# à vérifier avec `ip link` / l'interface LuCI une fois sur le vrai matériel.
+
+config interface 'loopback'
+	option device 'lo'
+	option proto 'static'
+	list ipaddr '127.0.0.1/8'
+
+config globals 'globals'
+	option ula_prefix 'fd69:d13f:5e6f::/48'   # généré automatiquement, ok de regénérer en prod
+
+config device
+	option name 'br-lan'
+	option type 'bridge'
+	option ports 'eth1'                        # ⚠ à adapter : interface(s) réellement câblée(s) au Wi-Fi clients sur le Flint 2
+
+config interface 'lan'
+	option device 'br-lan'
+	option proto 'static'
+	option ipaddr '192.168.56.2'               # ⚠ adresse de labo, à choisir en prod (éviter de collisionner avec le réseau du resto)
+	option netmask '255.255.255.0'
+
+config interface 'wan'
+	option device 'eth0'                       # ⚠ à adapter : port physique branché sur la box du resto
+	option proto 'dhcp'
