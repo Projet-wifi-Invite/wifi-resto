@@ -1,4 +1,5 @@
 """Fabrique de l'application Flask du portail wifi-resto."""
+import logging
 import os
 
 from dotenv import load_dotenv
@@ -11,6 +12,12 @@ from app.models import db
 def create_app(test_config=None):
     """Crée et configure l'application. Appelée par Flask et par les tests."""
     load_dotenv()
+    # Sans cette configuration, le logger Flask hérite du niveau WARNING du logger racine
+    # et les messages `info` du dialogue authmon n'apparaissent jamais en production.
+    logging.basicConfig(
+        level=os.environ.get("LOG_LEVEL", "INFO"),
+        format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+    )
     app = Flask(__name__)
     app.config["SECRET_KEY"] = os.environ.get("FLASK_SECRET_KEY", "dev-only")
     app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL", "sqlite://")
