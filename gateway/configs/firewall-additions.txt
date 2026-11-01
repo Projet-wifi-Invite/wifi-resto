@@ -1,0 +1,52 @@
+# Ajouts au pare-feu par défaut d'OpenWrt — /etc/config/firewall
+# Ne remplace pas la config par défaut (zones wan/lan de base, NAT, etc.), s'ajoute dessus.
+# Toutes ces règles ont été vérifiées en labo via les compteurs nftables
+# (`nft list chain inet fw4 forward_lan`), pas seulement par la config statique.
+
+# 1. Isolation des clients : bloque le trafic ROUTÉ entre deux clients du Wi-Fi.
+#    Ne couvre PAS l'isolation au niveau radio (voir option isolate dans /etc/config/wireless,
+#    indispensable en complément sur le vrai Wi-Fi — cette règle est une protection en
+#    profondeur, pas le mécanisme principal).
+#    Modifier la zone 'lan' existante : changer seulement option forward.
+config zone
+	option name 'lan'
+	list network 'lan'
+	option input 'ACCEPT'
+	option output 'ACCEPT'
+	option forward 'REJECT'          # était 'ACCEPT' par défaut
+
+# 2. Offloading désactivé (bug matériel MT7986 signalé par William)
+#    Modifier la section 'defaults' existante : ajouter/mettre à jour ces deux options.
+config defaults
+	option flow_offloading '0'
+	option flow_offloading_hw '0'
+
+# 3. Plages privées RFC1918 bloquées en sortie WAN — empêche un client Wi-Fi de pivoter
+#    vers le réseau interne du resto (caisse, TPE, bureau) si jamais il atteint une IP
+#    privée derrière la box.
+config rule
+	option name 'Block-Private-10'
+	option src 'lan'
+	option dest 'wan'
+	option dest_ip '10.0.0.0/8'
+	option proto 'all'
+	option target 'REJECT'
+
+config rule
+	option name 'Block-Private-172'
+	option src 'lan'
+	option dest 'wan'
+	option dest_ip '172.16.0.0/12'
+	option proto 'all'
+	option target 'REJECT'
+
+config rule
+	option name 'Block-Private-192168'
+	option src 'lan'
+	option dest 'wan'
+	option dest_ip '192.168.0.0/16'
+	option proto 'all'
+	option target 'REJECT'
+
+# Reste à faire (pas encore écrit) : isolation inverse — la passerelle elle-même ne doit
+# joindre que la box du resto, jamais le reste de son réseau. Prévu 13 nov avec William.

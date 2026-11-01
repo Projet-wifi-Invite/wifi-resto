@@ -1,0 +1,25 @@
+# /etc/config/opennds — ce qui a RÉELLEMENT été testé et vérifié en labo (portail local,
+# page générique "Click to continue" fournie par openNDS, sans FAS/VPS).
+# Sert de plan B si la réunion du 3 nov retient "portail sur le routeur" (cf. CLAUDE.md,
+# qui indique VPS comme plan A actuel), et de base pour tester la mécanique DHCP/pare-feu
+# indépendamment du VPS/FAS.
+
+config opennds
+	option enabled '1'
+	option gatewayinterface 'br-lan'
+	option gatewayname 'Wifi Resto'
+
+# Testé et vérifié de bout en bout avec un vrai client DHCP :
+#   1. apk add opennds dnsmasq-full
+#   2. apk del dnsmasq ; /etc/init.d/odhcpd stop ; /etc/init.d/odhcpd disable
+#   3. uci set opennds.@opennds[0].enabled='1'
+#      uci set opennds.@opennds[0].gatewayinterface='br-lan'
+#      uci set opennds.@opennds[0].gatewayname='Wifi Resto'
+#      uci commit opennds
+#      /etc/init.d/opennds restart
+#   4. un client avec un bail DHCP valide d'OpenWrt voit bien la popup "Accept Terms of
+#      Service" (page openNDS par défaut) à sa première requête HTTP
+#
+# Piège observé : ne pas laisser `option debuglevel '7'` en permanence (utile pour debug
+# ponctuel) — a provoqué un crash (general protection fault) d'openNDS en labo après
+# plusieurs heures. Retirer après debug : `uci delete opennds.@opennds[0].debuglevel`.
